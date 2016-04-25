@@ -80,7 +80,7 @@ public class MartCodingProjectCrawler extends BreadthCrawler {
             elements.stream().forEach(x -> {
                 try {
                     String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
-                    Files.write(Paths.get("/home/lyz/temp/" + urlid + ".html"), x.html().getBytes());
+                    Files.write(Paths.get("/home/clouder/lyz/temp/" + urlid + ".html"), x.html().getBytes());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -119,18 +119,5 @@ public class MartCodingProjectCrawler extends BreadthCrawler {
 //        fetchUrl(1, null);
     }
 
-    public static void main(String[] args) throws Exception {
-        MartCodingProjectCrawler crawler = new MartCodingProjectCrawler("crawler", true);
-        crawler.addSeed("https://mart.coding.net/projects");
-        fetchUrl(2, crawler);
-
-        /*可以设置每个线程visit的间隔，这里是毫秒*/
-        //crawler.setVisitInterval(1000);
-        /*可以设置http请求重试的间隔，这里是毫秒*/
-        //crawler.setRetryInterval(1000);
-
-        crawler.setThreads(10);
-        crawler.start(2);
-    }
 
 }
