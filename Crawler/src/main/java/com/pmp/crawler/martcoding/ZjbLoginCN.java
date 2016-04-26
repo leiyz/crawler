@@ -1,6 +1,12 @@
 package com.pmp.crawler.martcoding;
 
 
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
+import java.util.Set;
+
 /**
  * Created by lyz on 4/26/16.
  */
@@ -18,17 +24,17 @@ public class ZjbLoginCN {
      * @return
      * @throws Exception
      */
-    public static String getSinaCookie(String username, String password) throws Exception {
+    public static String getZbjCookie(String username, String password) throws Exception {
         StringBuilder sb = new StringBuilder();
         HtmlUnitDriver driver = new HtmlUnitDriver();
         driver.setJavascriptEnabled(true);
-        driver.get("http://login.weibo.cn/login/");
+        driver.get("https://login.zbj.com/login");
 
-        WebElement mobile = driver.findElementByCssSelector("input[name=mobile]");
+        WebElement mobile = driver.findElementByCssSelector("input[name=username]");
         mobile.sendKeys(username);
-        WebElement pass = driver.findElementByCssSelector("input[name^=password]");
+        WebElement pass = driver.findElementByCssSelector("input[name=password]");
         pass.sendKeys(password);
-        WebElement rem = driver.findElementByCssSelector("input[name=remember]");
+        WebElement rem = driver.findElementByCssSelector("input[name=cache]");
         rem.click();
         WebElement submit = driver.findElementByCssSelector("input[name=submit]");
         submit.click();
@@ -42,7 +48,7 @@ public class ZjbLoginCN {
         if (result.contains("gsid_CTandWM")) {
             return result;
         } else {
-            throw new Exception("weibo login failed");
+            throw new Exception("zbj login failed");
         }
     }
 }

@@ -83,7 +83,7 @@ public class MartCodingProjectCrawler extends BreadthCrawler {
             elements.stream().forEach(x -> {
                 try {
                     String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
-                    Path filepath = Paths.get("/home/lyz/temp/" + urlid + ".html");
+                    Path filepath = Paths.get("/home/lyz/temp/martprojects" + urlid + ".html");
                     BufferedWriter writer = Files.newBufferedWriter(filepath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
                     writer.write("<head>\n" +
                             "<META http-equiv=Content-Type content=\"text/html; charset=utf-8\">\n" +
