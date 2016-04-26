@@ -7,23 +7,25 @@ import cn.edu.hfut.dmic.webcollector.net.Proxys;
 import cn.edu.hfut.dmic.webcollector.plugin.berkeley.BreadthCrawler;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
  * Created by clouder on 4/19/16.
  */
-public class MartCodingISPCrawler extends BreadthCrawler {
+public class ZbjISPCrawler extends BreadthCrawler {
     private static int urlCount;
     /**
      *
      */
     private static Proxys proxys = new Proxys();
 
-    public MartCodingISPCrawler(String crawlPath, boolean autoParse) throws Exception {
+    public ZbjISPCrawler(String crawlPath, boolean autoParse) throws Exception {
         super(crawlPath, autoParse);
 
     }
@@ -57,9 +59,18 @@ public class MartCodingISPCrawler extends BreadthCrawler {
             elements.stream().forEach(x -> {
                 try {
                     String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
-                    Files.write(Paths.get("/home/clouder/lyz/temp/ISP/" + urlid), x.html().getBytes());
+                    Path filepath = Paths.get("/home/lyz/temp/ISP" + urlid + ".html");
+                    BufferedWriter writer = Files.newBufferedWriter(filepath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+                    writer.write("<head>\n" +
+                            "<META http-equiv=Content-Type content=\"text/html; charset=utf-8\">\n" +
+                            "</head>");
+                    writer.newLine();
+                    writer.append(x.html());
+                    writer.close();
+//                    String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
+//                    Files.write(Paths.get("/home/lyz/temp/" + urlid + ".html"), x.html().getBytes());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             });
         }
@@ -85,7 +96,7 @@ public class MartCodingISPCrawler extends BreadthCrawler {
 
     public static void main(String[] args) throws Exception {
 //        readProxyfile();
-        MartCodingISPCrawler crawler = new MartCodingISPCrawler("crawler", true);
+        ZbjISPCrawler crawler = new ZbjISPCrawler("crawler", true);
         crawler.addSeed("http://home.zbj.com");
 //        crawler.setRetryInterval(5000);
         /*可以设置每个线程visit的间隔，这里是毫秒*/
