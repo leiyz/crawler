@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package com.pmp.crawler.martcoding;
+package com.pmp.crawler;
 
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
 import cn.edu.hfut.dmic.webcollector.model.Links;
@@ -27,12 +27,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 
@@ -79,24 +75,9 @@ public class MartCodingProjectCrawler extends BreadthCrawler {
         if (page.matchUrl(".*project/.*")) {
             Elements elements = page.select("#mart-reward-detail > div.content");
             System.out.println(">>>> page = " + page.getUrl());
-
-            elements.stream().forEach(x -> {
-                try {
-                    String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
-                    Path filepath = Paths.get("/home/lyz/temp/martprojects" + urlid + ".html");
-                    BufferedWriter writer = Files.newBufferedWriter(filepath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
-                    writer.write("<head>\n" +
-                            "<META http-equiv=Content-Type content=\"text/html; charset=utf-8\">\n" +
-                            "</head>");
-                    writer.newLine();
-                    writer.append(x.html());
-                    writer.close();
-//                    String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
-//                    Files.write(Paths.get("/home/lyz/temp/" + urlid + ".html"), x.html().getBytes());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
+            Path filepath = Paths.get("/home/lyz/temp/martprojects" + urlid + ".html");
+            FileUtilitys.writeToHtmlFile(elements, filepath);
         }
     }
 

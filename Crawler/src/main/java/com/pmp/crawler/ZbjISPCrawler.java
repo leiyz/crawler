@@ -1,4 +1,4 @@
-package com.pmp.crawler.martcoding;
+package com.pmp.crawler;
 
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
 import cn.edu.hfut.dmic.webcollector.model.Links;
@@ -7,12 +7,10 @@ import cn.edu.hfut.dmic.webcollector.net.Proxys;
 import cn.edu.hfut.dmic.webcollector.plugin.berkeley.BreadthCrawler;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
@@ -56,23 +54,9 @@ public class ZbjISPCrawler extends BreadthCrawler {
         if (page.matchUrl("http://shop.zbj.com/[^/]+/salerinfo.html")) {
             urlCount++;
             Elements elements = page.select("#noMobileTip > div > div.wk-r > div > div");
-            elements.stream().forEach(x -> {
-                try {
-                    String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
-                    Path filepath = Paths.get("/home/lyz/temp/zbj-ISP" + urlid + ".html");
-                    BufferedWriter writer = Files.newBufferedWriter(filepath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
-                    writer.write("<head>\n" +
-                            "<META http-equiv=Content-Type content=\"text/html; charset=utf-8\">\n" +
-                            "</head>");
-                    writer.newLine();
-                    writer.append(x.html());
-                    writer.close();
-//                    String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
-//                    Files.write(Paths.get("/home/lyz/temp/" + urlid + ".html"), x.html().getBytes());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            String urlid = page.getUrl().replace("https://", "").replace("http://", "").replaceAll("/+", "-");
+            Path filepath = Paths.get("/home/lyz/temp/zbj-ISP" + urlid + ".html");
+            FileUtilitys.writeToHtmlFile(elements, filepath);
         }
     }
 

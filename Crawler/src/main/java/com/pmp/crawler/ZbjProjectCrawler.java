@@ -1,4 +1,4 @@
-package com.pmp.crawler.martcoding;
+package com.pmp.crawler;
 
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatum;
 import cn.edu.hfut.dmic.webcollector.model.CrawlDatums;
@@ -9,12 +9,8 @@ import cn.edu.hfut.dmic.webcollector.net.HttpResponse;
 import cn.edu.hfut.dmic.webcollector.plugin.berkeley.BreadthCrawler;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 /**
  * Created by lyz on 4/26/16.
@@ -28,7 +24,7 @@ public class ZbjProjectCrawler extends BreadthCrawler {
     @Override
     public HttpResponse getResponse(CrawlDatum crawlDatum) throws Exception {
         HttpRequest request = new HttpRequest(crawlDatum);
-        request.setCookie(com.pmp.crawler.martcoding.ZjbLoginCN.getZbjCookie("lyz88119@126.com", "engine"));
+        request.setCookie(ZjbLoginCN.getZbjCookie("lyz88119@126.com", "engine"));
         return request.getResponse();
     }
 
@@ -50,19 +46,7 @@ public class ZbjProjectCrawler extends BreadthCrawler {
 //            elements.append(page.select("#work-more").html());模拟登录
             //#j-content > div > div.nts.mt15.clearfix.task-extend-item
             elements.append(page.select("#j-content > div > div.nts.mt15.clearfix.task-extend-item").html());
-            elements.stream().forEach(x -> {
-                try {
-                    BufferedWriter writer = Files.newBufferedWriter(filepath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
-                    writer.write("<head>\n" +
-                            "<META http-equiv=Content-Type content=\"text/html; charset=utf-8\">\n" +
-                            "</head>");
-                    writer.newLine();
-                    writer.append(x.html());
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            FileUtilitys.writeToHtmlFile(elements, filepath);
         }
     }
 
