@@ -27,28 +27,32 @@ public class ZjbLoginCN {
     public static String getZbjCookie(String username, String password) throws Exception {
         StringBuilder sb = new StringBuilder();
         HtmlUnitDriver driver = new HtmlUnitDriver();
-        driver.setJavascriptEnabled(true);
-        driver.get("https://login.zbj.com/login");
+        driver.setJavascriptEnabled( false );
+        driver.get( "https://login.zbj.com/login" );
 
-        WebElement mobile = driver.findElementByCssSelector("input[name=username]");
-        mobile.sendKeys(username);
-        WebElement pass = driver.findElementByCssSelector("input[name=password]");
-        pass.sendKeys(password);
-        WebElement rem = driver.findElementByCssSelector("input[name=cache]");
+        WebElement mobile = driver.findElementByCssSelector( "#username" );
+        mobile.sendKeys( username );
+        WebElement pass = driver.findElementByCssSelector( "#password" );
+        pass.sendKeys( password );
+        WebElement rem = driver.findElementByCssSelector( "input[name=cache]" );
         rem.click();
-        WebElement submit = driver.findElementByCssSelector("input[name=submit]");
+        WebElement submit = driver.findElementByCssSelector( "#login > div > div> button" );
         submit.click();
 
         Set<Cookie> cookieSet = driver.manage().getCookies();
         driver.close();
         for (Cookie cookie : cookieSet) {
-            sb.append(cookie.getName() + "=" + cookie.getValue() + ";");
+            sb.append( cookie.getName() + "=" + cookie.getValue() + ";" );
         }
         String result = sb.toString();
-        if (result.contains("gsid_CTandWM")) {
-            return result;
-        } else {
-            throw new Exception("zbj login failed");
-        }
+//        if (result.contains( "gsid_CTandWM" )) {
+        return result;
+//        } else {
+//            throw new Exception( "zbj login failed" );
+//        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        getZbjCookie( "lyz88119@126.com", "engine" );
     }
 }
