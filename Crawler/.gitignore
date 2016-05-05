@@ -4,6 +4,9 @@
 *.iml
 *.ipr
 *.iws
+*.jdb
+je.info.0
+je.lck
 
 # eclipse files
 .project
