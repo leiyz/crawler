@@ -4,9 +4,6 @@
 *.iml
 *.ipr
 *.iws
-*.jdb
-je.info.0
-je.lck
 
 # eclipse files
 .project
@@ -42,3 +39,8 @@ html_docs
 # random old stuff that we should look at the necessity of...
 /tmp/
 backwards/
+
+*.jdb
+je.info.0
+je.lck
+
