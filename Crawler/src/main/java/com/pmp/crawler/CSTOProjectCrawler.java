@@ -33,54 +33,14 @@ public class CSTOProjectCrawler extends BreadthCrawler {
         request.setMAX_REDIRECT( 5 );
 //        request.setTimeoutForConnect( 150000 );
 //        request.setTimeoutForRead( 200000 );
-        request.setCookie( "bdshare_firstime=1462420516150; UserName=OOOO00; UserInfo=yuXA6jbFM8Aipvonl8ozIW7ySRd0mRK8Ylchc%252B7jUuRRSKn%252BAmxHeI80XqlLO2SsA2k%252BpvFhf2NpI%252FzLtMJbUDjFoiJx9JzHdwBrCf6Vt3bFTv4XmJOyv69ezvSU%252Bb6D; CSTOID=mr0gt0gdbddgim5n25c8od7601; dc_tos=o6qww0; dc_session_id=1462521600571; Hm_lvt_67fed6c225de3f90d9f513aed5a91532=1462521601; Hm_lpvt_67fed6c225de3f90d9f513aed5a91532=1462521601; __utmt=1; __utma=174166704.1603062621.1462521601.1462521601.1462521601.1; __utmb=174166704.1.10.1462521601; __utmc=174166704; __utmz=174166704.1462521601.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)" );
+        request.setCookie( "visite=%2Fproject%2Flist; CSTOID=s8v0dn01oip0gcrokkteq5ss96; login_checked=1; __utmt=1; dc_tos=o6weln; dc_session_id=1462777835937; __utma=174166704.147535321.1462777831.1462777831.1462777831.1; __utmb=174166704.2.10.1462777831; __utmc=174166704; __utmz=174166704.1462777831.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); Hm_lvt_67fed6c225de3f90d9f513aed5a91532=1462777830; Hm_lpvt_67fed6c225de3f90d9f513aed5a91532=1462777836; UserName=OOOO00; UserInfo=yuXA6jbFM8Aipvonl8ozIW7ySRd0mRK8Ylchc%252B7jUuRRSKn%252BAmxHeI80XqlLO2SsA2k%252BpvFhf2NpI%252FzLtMJbUDjFoiJx9JzHdwBrCf6Vt3bFTv4XmJOyv69ezvSU%252Bb6D" );
         return request.getResponse();
     }
 
     @Override
     public void visit(Page page, CrawlDatums crawlDatums) {
-        if (page.matchUrl( "http://www.csto.com/project/list?page=[^/]/" )) {
-            System.out.println( page.getUrl() );
-            Links pageLinks = page.getLinks( "#list_shwores > dl > dd.intro > div.title > a" );
-            System.out.println( "------->CSTO project for each page size:" + pageLinks.size() );
-            crawlDatums.add( pageLinks );
-            return;
-        } else if (page.matchUrl( "http://www.csto.com/p/[^/]/" )) {
-            System.out.println( page.getUrl() );
-            String urlid = page.getUrl().replace( "https://", "" ).replace( "http://", "" ).replaceAll( "/+", "-" );
-            String filePath = "/home/lyz/temp/csto-project";
-
-            //IVRight content 计划中  工作中
-            Elements elements = page.select( "body > div.wrap.ItemView > div.IVRight > dl > dt > h5 > span" );
-            // finish project
-            Elements elementsFinish = page.select( "div.wrap finish project" );
-            if (elementsFinish != null && elementsFinish.size() > 0) {
-                Path filepath = Paths.get( filePath + "/finished" + urlid + ".html" );
-                FileUtilitys.writeToHtmlFile( elementsFinish, filepath );
-                return;
-
-            } else {
-                if (elements == null || elements.size() != 1) return;
-                Elements elementsWorking = page.select( "body > div> div.IVLeft" );
-                if ("计划中".equals( elements.get( 0 ).text().trim() )) {
-                    Path filepath = Paths.get( filePath + "/working" + urlid + ".html" );
-                    FileUtilitys.writeToHtmlFile( elementsWorking, filepath );
-                    return;
-                }
-                if ("关闭".equals( elements.get( 0 ).text().trim() )) {
-                    Path filepath = Paths.get( filePath + "/closed" + urlid + ".html" );
-                    FileUtilitys.writeToHtmlFile( elementsWorking, filepath );
-                    return;
-                }
-                //竞标
-                if ("竞标".equals( elements.get( 0 ).text().trim() )) {
-                    Path filepath = Paths.get( filePath + "/bidding" + urlid + ".html" );
-                    FileUtilitys.writeToHtmlFile( elementsWorking, filepath );
-                    return;
-                }
-            }
-        } else {
-            System.out.println( page.getUrl() );
+        if (page.matchUrl( "http://www.csto.com/project/list" )) {
+            System.out.println( "----------->>>>>step1:" + page.getUrl() );
             Elements elements = page.select( "#list_pageshow > a" );
             elements.forEach( x ->
             {
@@ -88,15 +48,55 @@ public class CSTOProjectCrawler extends BreadthCrawler {
                     String[] urlparams = x.attributes().get( "href" ).trim().split( "=" );
                     if (urlparams == null || urlparams.length < 2) return;
                     int totalPage = Integer.parseInt( urlparams[1] );
-                    int pageNums = (int) (1 + Math.random() * (totalPage));
-                    while (pageNums >= 2) {
-                        pageNums--;
-                        crawlDatums.add( seedsPrefix + urlparams[0] + "=" + pageNums );
+                    while (totalPage >= 2) {
+                        totalPage--;
+                        crawlDatums.add( seedsPrefix + urlparams[0] + "=" + totalPage );
                     }
                     return;
                 }
             } );
             return;
+        } else if (page.matchUrl( ".*?page=.*" )) {
+            System.out.println( "----------->>>>>step2:" + page.getUrl() );
+            Links pageLinks = page.getLinks( "#list_shwores > dl > dd.intro > div.title > a" );
+            System.out.println( "------->CSTO project for each page size:" + pageLinks.size() );
+            crawlDatums.add( pageLinks );
+            return;
+        } else {
+            System.out.println( "----------->>>>>step3:" + page.getUrl() );
+            String urlid = page.getUrl().replace( "https://", "" ).replace( "http://", "" ).replaceAll( "/+", "-" );
+            String filePath = "/home/lyz/temp/csto-project";
+            Elements elements = page.select( "body > div.wrap.ItemView > div.IVRight > dl > dt > h5 > span" );
+            //project title body > div> div> h2
+            //project status body > div> div> div.status_bar
+            //project info body > div > div > div.item_board
+            //project log body > div> div > div.item_log
+            Elements prj = page.select( "body > div> div> h2" );
+            prj.append( page.select( "body > div> div> div.status_bar" ).html() );
+            prj.append( page.select( "body > div > div > div.item_board" ).html() );
+            prj.append( page.select( "body > div> div > div.item_log" ).html() );
+            if (elements == null && elements.size() <= 0) return;
+            if ("完工".equals( elements.get( 0 ).text().trim() )) {
+                Path filepath = Paths.get( filePath + "/finished/" + urlid + ".html" );
+                FileUtilitys.writeToHtmlFile( prj, filepath );
+                return;
+
+            }
+            if ("计划中".equals( elements.get( 0 ).text().trim() )) {
+                Path filepath = Paths.get( filePath + "/working/" + urlid + ".html" );
+                FileUtilitys.writeToHtmlFile( prj, filepath );
+                return;
+            }
+            if ("关闭".equals( elements.get( 0 ).text().trim() )) {
+                Path filepath = Paths.get( filePath + "/closed/" + urlid + ".html" );
+                FileUtilitys.writeToHtmlFile( prj, filepath );
+                return;
+            }
+            if ("竞标".equals( elements.get( 0 ).text().trim() )) {
+                Path filepath = Paths.get( filePath + "/bidding/" + urlid + ".html" );
+                FileUtilitys.writeToHtmlFile( prj, filepath );
+                return;
+            }
         }
     }
 
@@ -109,8 +109,10 @@ public class CSTOProjectCrawler extends BreadthCrawler {
     public static void main(String[] args) throws Exception {
         CSTOProjectCrawler crawler = null;
         crawler = new CSTOProjectCrawler( "cstoCrawler", true );
+        //http://www.csto.com/project/list?page=16
+        //http://www.csto.com/project/list
         crawler.addSeed( "http://www.csto.com/project/list" );
-        crawler.setThreads( 10 );
+        crawler.setThreads( 3 );
         crawler.start( 3 );
     }
 }
