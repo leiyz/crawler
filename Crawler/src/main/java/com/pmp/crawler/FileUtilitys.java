@@ -13,6 +13,7 @@ import java.nio.file.StandardOpenOption;
  */
 public class FileUtilitys {
     public static void writeToHtmlFile(Elements elements, Path filepath) {
+        if (Files.exists( filepath )) return;
         elements.stream().forEach( x -> {
             try {
                 BufferedWriter writer = Files.newBufferedWriter( filepath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW );

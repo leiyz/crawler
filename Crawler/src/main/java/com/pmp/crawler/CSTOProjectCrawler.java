@@ -33,7 +33,7 @@ public class CSTOProjectCrawler extends BreadthCrawler {
         request.setMAX_REDIRECT( 5 );
 //        request.setTimeoutForConnect( 150000 );
 //        request.setTimeoutForRead( 200000 );
-        request.setCookie( "visite=%2Fproject%2Flist; CSTOID=s8v0dn01oip0gcrokkteq5ss96; login_checked=1; __utmt=1; dc_tos=o6weln; dc_session_id=1462777835937; __utma=174166704.147535321.1462777831.1462777831.1462777831.1; __utmb=174166704.2.10.1462777831; __utmc=174166704; __utmz=174166704.1462777831.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); Hm_lvt_67fed6c225de3f90d9f513aed5a91532=1462777830; Hm_lpvt_67fed6c225de3f90d9f513aed5a91532=1462777836; UserName=OOOO00; UserInfo=yuXA6jbFM8Aipvonl8ozIW7ySRd0mRK8Ylchc%252B7jUuRRSKn%252BAmxHeI80XqlLO2SsA2k%252BpvFhf2NpI%252FzLtMJbUDjFoiJx9JzHdwBrCf6Vt3bFTv4XmJOyv69ezvSU%252Bb6D" );
+        request.setCookie( "visite=%2Fproject%2Flist; CSTOID=ck7pmgo7meefr35ndkr8c56qg5; login_checked=1; __utmt=1; UserName=OOOO00; UserInfo=yuXA6jbFM8Aipvonl8ozIW7ySRd0mRK8Ylchc%252B7jUuRRSKn%252BAmxHeI80XqlLO2SsA2k%252BpvFhf2NpI%252FzLtMJbUDjFoiJx9JzHdwBrCf6Vt3bFTv4XmJOyv69ezvSU%252Bb6D; __utma=174166704.194682639.1462853396.1462853396.1462860204.2; __utmb=174166704.4.10.1462860204; __utmc=174166704; __utmz=174166704.1462853396.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); dc_tos=o6y66q; dc_session_id=1462860242370; Hm_lvt_67fed6c225de3f90d9f513aed5a91532=1462853396; Hm_lpvt_67fed6c225de3f90d9f513aed5a91532=1462860242" );
         return request.getResponse();
     }
 
@@ -71,11 +71,19 @@ public class CSTOProjectCrawler extends BreadthCrawler {
             //project status body > div> div> div.status_bar
             //project info body > div > div > div.item_board
             //project log body > div> div > div.item_log
+            //project success body > div> div.complete-top   body > div > div.item_view
+
+            if (elements == null || elements.size() <= 0) {
+                Elements success = page.select( "body > div> div.complete-top" );
+                success.append( page.select( "body > div > div.item_view" ).html() );
+                Path filepath = Paths.get( filePath + "/success/" + urlid + ".html" );
+                FileUtilitys.writeToHtmlFile( success, filepath );
+                return;
+            }
             Elements prj = page.select( "body > div> div> h2" );
             prj.append( page.select( "body > div> div> div.status_bar" ).html() );
             prj.append( page.select( "body > div > div > div.item_board" ).html() );
             prj.append( page.select( "body > div> div > div.item_log" ).html() );
-            if (elements == null && elements.size() <= 0) return;
             if ("完工".equals( elements.get( 0 ).text().trim() )) {
                 Path filepath = Paths.get( filePath + "/finished/" + urlid + ".html" );
                 FileUtilitys.writeToHtmlFile( prj, filepath );
@@ -111,8 +119,9 @@ public class CSTOProjectCrawler extends BreadthCrawler {
         crawler = new CSTOProjectCrawler( "cstoCrawler", true );
         //http://www.csto.com/project/list?page=16
         //http://www.csto.com/project/list
+        //http://www.csto.com/p/61908
         crawler.addSeed( "http://www.csto.com/project/list" );
-        crawler.setThreads( 3 );
+        crawler.setThreads( 5 );
         crawler.start( 3 );
     }
 }
